@@ -98,29 +98,6 @@ t_s32int rest_longon_server(t_s32int conn, char *name)
         return FUNC_ERR;
     }
 }
-//商家获取自己菜单列表
-t_s32int get_menu_by_name_by_rest_server(t_s32int conn, char *name)
-{
-    t_s32int size;
-    menu *get;
-    get = get_menu_by_name_res(name, &size);
-    for (int i = 0; i < size; i++)
-    {
-        printf("%s ", get[i].food);
-    }
-    if (get == NULL)
-    {
-        INFO_MSG("cant find order \n");
-        return FUNC_ERR;
-    }
-    write(conn, &size, 4);
-    for (int i = 0; i < size; i++)
-    {
-        write(conn, get + i, sizeof(menu));
-    }
-    free(get);
-    return FUNC_OK;
-}
 
 //商家修改菜单  43
 t_s32int update_menu_by_rst(t_s32int conn, char *name)
@@ -130,21 +107,32 @@ t_s32int update_menu_by_rst(t_s32int conn, char *name)
     menu buf;
     bzero(&buf, sizeof(buf));
     get = get_menu_by_name_res(name, &size);
-    for (int i = 0; i < size; i++)
-    {
-        printf("%s ", get[i].food);
-    }
     if (get == NULL)
     {
         INFO_MSG("cant find menu list is empty \n");
         int i = 0;
         write(conn, &i, sizeof(int));
-        // return FUNC_ERR;
+
+        menu find;
+        get_rst_sigal(name, &find);
+        write(conn, &find, sizeof(menu));
+        int get_size;
+        menu get_buf;
+        read(conn, &get_size, 4);
+        for (int i = 0; i < get_size; i++)
+        {
+            read(conn, &get_buf, sizeof(get_buf));
+            //   printf("%s \n", get_buf.food);
+            insert_menu(get_buf);
+        }
+
+        free(get);
+        return FUNC_OK;
     }
 
     t_s32int get_size;
     write(conn, &size, 4);
-    printf("get menus ;write size %d line 144 \n", size);
+    //printf("get menus ;write size %d line 144 \n", size);
     for (int i = 0; i < size; i++)
     {
         write(conn, get + i, sizeof(menu));
@@ -162,7 +150,7 @@ t_s32int update_menu_by_rst(t_s32int conn, char *name)
     {
 
         read(conn, &buf, sizeof(buf));
-        printf("get name %s/n", buf.name);
+        //  printf("get name %s\n", buf.food);
         insert_menu(buf);
     }
 
@@ -183,14 +171,14 @@ t_s32int rest_reg_server(t_s32int conn)
     printf("flag %d \n", buf_recv.flag);
     if (get_rst_sigal(buf_recv.name, &buf_tmp) == FUNC_OK)
     {
-        printf(" find name %s dont insert \n", buf_recv.name);
+        // printf(" find name %s dont insert \n", buf_recv.name);
 
         write(conn, "failed", 6);
         return FUNC_ERR;
     }
     else
     {
-        printf(" cant find name %s insert into\n", buf_recv.name);
+        //  printf(" cant find name %s insert into\n", buf_recv.name);
         insert_res(buf_recv);
         printf("insert ok");
         write(conn, "success", 7);
@@ -198,7 +186,7 @@ t_s32int rest_reg_server(t_s32int conn)
     }
 }
 
-//商家获取自己所有的订单 44
+//商家修改自己所有的订单 44
 t_s32int get_order_info_by_name_by_rst_server(t_s32int conn, char *rst)
 {
     t_s32int size;
@@ -210,15 +198,30 @@ t_s32int get_order_info_by_name_by_rst_server(t_s32int conn, char *rst)
     }
     if (get == NULL)
     {
-        INFO_MSG("cant find order \n");
+        write(conn, &size, 4);
+        INFO_MSG("rst cant find order \n");
         return FUNC_ERR;
     }
-    t_s32int get_size;
+
     write(conn, &size, 4);
     for (int i = 0; i < size; i++)
     {
         write(conn, get + i, sizeof(order_info));
     }
+
+    t_s32int get_size;
+    order_info buf;
+    // read(conn, &get_size, 4);
+    order_del_by_rst(rst);
+    // printf("%s \n ", rst);
+    // printf("size %d", size);
+    for (int i = 0; i < size; i++)
+    {
+        read(conn, &buf, sizeof(order_info));
+        //  printf("get food %s \n", buf.food[0]);
+        insert_order(buf);
+    }
+
     free(get);
     return FUNC_OK;
 }
@@ -238,8 +241,8 @@ t_s32int cus_longon_server(t_s32int conn, char *name)
 
     if (get_cus_info_by_name_sigal(buf_recv.name, &buf_tmp) == FUNC_OK)
     {
-        printf(" find name %s  \n", buf_recv.name);
-        printf("pass %s \n", buf_recv.password);
+        //   printf(" find name %s  \n", buf_recv.name);
+        //  printf("pass %s \n", buf_recv.password);
 
         if (strncmp(buf_recv.password, buf_tmp.password, sizeof(buf_recv.password)) == 0)
         {
@@ -463,6 +466,9 @@ void *thread_fun_rest(void *arg)
         case 44:
             get_order_info_by_name_by_rst_server(arg_in_fun.conn_fd, rst);
             break;
+        case 45:
+            get_order_info_by_name_by_rst_server(arg_in_fun.conn_fd, rst);
+            break;
         case 1:
 
             get_order_by_cus_name_by_cus_server(arg_in_fun.conn_fd);
@@ -498,13 +504,17 @@ void *thread_fun_rest(void *arg)
             modify_order_by_cus(arg_in_fun.conn_fd);
 
             break;
-
-        default:
-
+        }
+        if (i > 50 || i < 0)
+        {
             INFO_MSG("unknow message! disconnect\n");
             close(arg_in_fun.conn_fd);
-            return NULL;
-            break;
         }
     }
+}
+
+void *thread_fun_listen(void *arg)
+{
+
+    fun_arg arg_in_fun = *(fun_arg *)arg;
 }

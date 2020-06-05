@@ -196,7 +196,7 @@ t_s32int get_cus_info_by_name_sigal(t_s8int *name, struct cus_info *user_find)
         return -1;
     }
     sprintf(buf, "select * from cus where name='%s';", name);
-    printf("%s \n", buf);
+    //printf("%s \n", buf);
     ret = sqlite3_get_table(db, buf, &dbResult, &nRow, &nColumn, &errmsg);
     if (0 == nRow || 0 == nColumn)
     {
@@ -728,7 +728,7 @@ order_info *get_order_info_by_cust_name(t_s8int *name, t_s32int *size)
         INFO_MSG("cant find things\n");
         return NULL;
     }
-    DEBUG_MSG("find ting\n");
+    // DEBUG_MSG("find ting\n");
     order_info data[nRow];
     bzero(data, sizeof(data));
     *size = nRow;
@@ -1119,6 +1119,7 @@ t_s32int insert_order(order_info info)
             info.phone_num, info.cust_review, info.res_review, info.flag);
 
     sql(buf, NULL);
+    // printf("%s \n", buf);
 }
 
 //插入菜单信息
@@ -1171,6 +1172,18 @@ t_s32int menu_del_by_food(char *food, char *name)
         return FUNC_ERR;
     }
     return FUNC_ERR;
+}
+
+//根据商家名字删除订单
+t_s32int order_del_by_rst(char *name)
+{
+    t_s8int buf[200];
+    sprintf(buf, "delete from order_info where restaurant='%s' ;", name);
+    if (FUNC_OK != sql(buf, NULL))
+    {
+        return FUNC_ERR;
+    }
+    return FUNC_OK;
 }
 //根据商家名字删除菜单
 t_s32int menu_del_by_rest_name(char *name)
@@ -1246,10 +1259,23 @@ t_s32int main1(void)
     // insert_menu("c9", "cx", "vx", 20, 1);
     // insert_cus("zs", "cxz", 23);
     // insert_cus("ls", "cxzvc", 253);
-    // insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
+    order_info or ;
+    bzero(& or, sizeof(or));
+
+    strncpy(or.restaurant, "ad", sizeof(or.restaurant));
+    strncpy(or.food[0], "food1", sizeof(or.restaurant));
+    strncpy(or.food[1], "food2", sizeof(or.restaurant));
+    strncpy(or.food[2], "food3", sizeof(or.restaurant));
+
+    for (int i = 0; i < 2; i++)
+    {
+        insert_order(or);
+    }
+
+    //  insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
 
     // insert_cus("zsx", "cxzv", 2);
-    // insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
+    // insert_order("1234", "ad", "ad", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
     // insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1); */
 
     //  user_del_by_name("ls");

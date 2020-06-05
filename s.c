@@ -4,7 +4,7 @@ int main(void)
 {
     signal(SIGPIPE, SIG_IGN);
     int listen_fd = socket(PF_INET, SOCK_STREAM, 0), conn_fd;
-
+    //setsockopt(listen_fd,SOL_SOCKET,SO_REUSERADDR,)
     if (listen_fd < 0)
     {
         perror("listen_fd");
