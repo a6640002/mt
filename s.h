@@ -25,6 +25,7 @@ typedef signed int t_s32int;
 typedef signed char t_s8int;
 typedef float t_s64float;
 typedef const char t_c8int;
+
 #define DEBUG_MSG(x)                                    \
     printf("[%s][%d][DEBUG]:", __FUNCTION__, __LINE__); \
     printf(x)
@@ -141,7 +142,7 @@ t_s32int update_menu_by_rst(t_s32int conn, char *name)
 
     read(conn, &get_size, 4);
 
-    printf("get_size %d \n", get_size);
+    // printf("get_size %d \n", get_size);
     if (menu_del_by_rest_name(name) == FUNC_ERR)
     {
         INFO_MSG("del menu error flag 43\n");
@@ -448,7 +449,7 @@ void *thread_fun_rest(void *arg)
         t_s8int buf[300];
         t_s32int i = 0;
         read(arg_in_fun.conn_fd, &i, 4);
-        printf("get  new flag:%d \n", i);
+        printf("get  new flag:%d connfd:%d \n", i, arg_in_fun.conn_fd);
 
         switch (i)
         {
@@ -502,15 +503,13 @@ void *thread_fun_rest(void *arg)
             break;
         case 10:
             modify_order_by_cus(arg_in_fun.conn_fd);
-
-            break;
-        }
-        if (i > 50 || i < 0)
-        {
+        case 0:
             INFO_MSG("unknow message! disconnect\n");
-            close(arg_in_fun.conn_fd);
+
+            return 0;
         }
     }
+    close(arg_in_fun.conn_fd);
 }
 
 void *thread_fun_listen(void *arg)
