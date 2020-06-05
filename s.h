@@ -136,33 +136,37 @@ t_s32int update_menu_by_rst(t_s32int conn, char *name)
     }
     if (get == NULL)
     {
-        INFO_MSG("cant find order \n");
+        INFO_MSG("cant find menu list is empty \n");
         int i = 0;
         write(conn, &i, sizeof(int));
-        return FUNC_ERR;
+        // return FUNC_ERR;
     }
 
     t_s32int get_size;
     write(conn, &size, 4);
-    printf("write size %d line 144 \n", size);
+    printf("get menus ;write size %d line 144 \n", size);
     for (int i = 0; i < size; i++)
     {
         write(conn, get + i, sizeof(menu));
     }
+    // printf(" write ok  152\n");
+
     read(conn, &get_size, 4);
 
-    printf("%d \n", get_size);
+    printf("get_size %d \n", get_size);
     if (menu_del_by_rest_name(name) == FUNC_ERR)
     {
-        INFO_MSG("del menu error flag 43");
+        INFO_MSG("del menu error flag 43\n");
     };
     for (int i = 0; i < get_size; i++)
     {
 
         read(conn, &buf, sizeof(buf));
-
+        printf("get name %s/n", buf.name);
         insert_menu(buf);
     }
+
+    return FUNC_OK;
 }
 // 商家注册编号41
 t_s32int rest_reg_server(t_s32int conn)
@@ -433,6 +437,7 @@ void *thread_fun_rest(void *arg)
 {
 
     fun_arg arg_in_fun = *(fun_arg *)arg;
+    printf("new thread:%lld,socket:%d,user connect\n", (long long)pthread_self, arg_in_fun.conn_fd);
     while (1)
     {
 
@@ -440,15 +445,7 @@ void *thread_fun_rest(void *arg)
         t_s8int buf[300];
         t_s32int i = 0;
         read(arg_in_fun.conn_fd, &i, 4);
-        printf("get flag:%d \n", i);
-        if (i < 40)
-        {
-            printf("new thread:%lld,socket:%d,user connect", (long long)pthread_self, arg_in_fun.conn_fd);
-        }
-        else
-        {
-            printf("new thread:%lld,socket:%d,rest connect", (long long)pthread_self, arg_in_fun.conn_fd);
-        }
+        printf("get  new flag:%d \n", i);
 
         switch (i)
         {

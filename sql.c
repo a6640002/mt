@@ -375,7 +375,7 @@ menu *get_menu_by_name_res(t_s8int *name, t_s32int *size)
     ret = sqlite3_get_table(db, buf, &dbResult, &nRow, &nColumn, &errmsg);
     if (0 == nRow || 0 == nColumn)
     {
-        INFO_MSG("cant find things");
+        //  INFO_MSG("find nothing \n");
         return NULL;
     }
     menu data[nRow];
@@ -1181,7 +1181,7 @@ t_s32int menu_del_by_rest_name(char *name)
     {
         return FUNC_ERR;
     }
-    return FUNC_ERR;
+    return FUNC_OK;
 }
 //根据用户名删除用户
 t_s32int user_del_by_name(char *name)
