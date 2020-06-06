@@ -566,7 +566,6 @@ void *thread_fun_rest(void *arg)
 {
 
     fun_arg arg_in_fun = *(fun_arg *)arg;
-    printf("%d \n", sizeof(order_info));
 
     printf("new thread:%lld,socket:%d,user connect\n", (long long)pthread_self, arg_in_fun.conn_fd);
     //if_listen_socket(arg, &i);

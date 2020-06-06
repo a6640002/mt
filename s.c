@@ -11,6 +11,7 @@ int main(void)
         return -1;
     }
     sockaddr_in addr;
+
     init_sockaddr(&addr);
     if (0 > bind(listen_fd, (sockaddr *)&addr, sizeof(sockaddr_in)))
     {
@@ -20,7 +21,7 @@ int main(void)
         }
     }
     listen(listen_fd, 10);
-    pthread_create(&conn_ph, 0, thread_fun_listen, NULL);
+    //  pthread_create(&conn_ph, 0, thread_fun_listen, NULL);
 
     while (1)
     {

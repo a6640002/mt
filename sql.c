@@ -14,6 +14,8 @@
 #include <pthread.h>
 #include <strings.h>
 #include <sqlite3.h>
+#include "list.h"
+
 typedef signed int t_s32int;
 typedef signed char t_s8int;
 typedef float t_s64float;
@@ -64,6 +66,7 @@ struct cus_info
     t_s8int password[20]; //密码
     t_s32int flag;        //完成操作的函数
 };
+
 typedef struct cus_info cus_info;
 typedef struct menu menu;
 typedef struct order_info order_info;
@@ -879,23 +882,13 @@ order_info *get_order_info_by_cust_name(t_s8int *name, t_s32int *size)
                     break;
                 }
 
-                //  printf("字段值:%s,%d \n", dbResult[index], index);
-
                 ++index;
             }
         }
-        /*restaurant, customer, food1, food2,
-            food3, food4, food5, food6, food7, food8,
-            food9, food10, price1, price2, price3, price4,
-            price5, price6, price7, price8, price9,
-            price10, price_total, cus_addr, book_time, remark,
-            phone_num, cust_review, res_review, flag)*/
-        // 30-59 下标
 
         for (int i = 0; i < (*size); i++)
         {
             ret_data[i] = data[i];
-            // printf("%s \n", data[i].phone_num);
         }
 
         sqlite3_free_table(dbResult);
@@ -1446,20 +1439,10 @@ t_s32int update_res_review(char *id, char *review)
     }
     return FUNC_ERR;
 }
+
 t_s32int main1(void)
 {
-    //       struct order_info find;
-    //  sql(init_menu_info, NULL);
-    // sql(init_cus_info, NULL);
-    // sql(init_order_info, NULL);
 
-    // order_del_by_time("");
-    //      insert_menu("cc", "cx", "vx", 20, 1);
-    // insert_menu("cx", "cx", "vx", 20, 1);
-    // insert_menu("cv", "cx", "vx", 20, 1);
-    // insert_menu("c9", "cx", "vx", 20, 1);
-    // insert_cus("zs", "cxz", 23);
-    // insert_cus("ls", "cxzvc", 253);
     order_info or ;
     bzero(& or, sizeof(or));
 
@@ -1472,34 +1455,4 @@ t_s32int main1(void)
     {
         insert_order(or);
     }
-
-    //  insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
-
-    // insert_cus("zsx", "cxzv", 2);
-    // insert_order("1234", "ad", "ad", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1);
-    // insert_order("1234", "lilx", "zvdx", "cx", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, "huanxinlu", "1111", "pinjia", "13213213", "haopin", "capin", 1); */
-
-    //  user_del_by_name("ls");
-    //  menu_del_by_food("vx");
-    // printf("%s ", find.name);
-    //  update_res_review("1234", "xx");
-    // int size;
-    // menu *get_data = get_menu_by_name("cc", &size);
-
-    // get_cus_info_by_name_sigal("zs", &user_find);
-    //  printf("%s\n", user_find.name);
-    // get_menu_by_name_sigal("cx", &find);
-    //get_order_info_by_name_sigal("zs", &find);
-    //  printf("%s\n", find.restaurant);
-    //  printf("%d\n", sizeof(struct order_info));
-    // menu find;
-    // get_menu_by_name_sigal("cb", &find);
-    int size;
-
-    // order_info *get_data = get_order_info_by_name("vdx", &size);
-    // printf("%d \n", size);
-    // for (int i = 0; i < size; i++)
-    // {
-    //     printf("%s \n", get_data[i].customer);
-    // }
 }
