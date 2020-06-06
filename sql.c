@@ -1103,6 +1103,207 @@ order_info *get_order_info_by_res_name(t_s8int *res, t_s32int *size)
     }
 }
 
+//根据商家获取订单 flag为2
+order_info *get_order_info_by_res_by_flag_name(t_s8int *res, t_s32int *size)
+{
+    t_s8int buf[200];
+    //char *name = "x";
+    sqlite3 *db;
+    char *errmsg = NULL; //用来存储错误信息字符串
+    t_s8int ret = 0;
+    t_s32int index;
+    char **dbResult;
+    t_s32int nRow = 0, nColumn = 0; //nRow 查找出的总行数,nColumn 存储列
+    ret = sqlite3_open("t.db", &db);
+    if (1 == ret) //数据库创建未成功
+    {
+        fprintf(stderr, "Can't open this database: %s\n", sqlite3_errmsg(db)); //用sqlite3_errmsg()得到错误字符串
+        sqlite3_close(db);
+        return NULL;
+    }
+    sprintf(buf, "select * from order_info where restaurant='%s' and flag = 2;", res);
+    //printf("%s \n", buf);
+    ret = sqlite3_get_table(db, buf, &dbResult, &nRow, &nColumn, &errmsg);
+    if ((0 == nRow) || (0 == nColumn))
+    {
+        INFO_MSG("cant find things\n");
+        return NULL;
+    }
+    DEBUG_MSG("find thing\n");
+    order_info data[nRow];
+    bzero(data, sizeof(data));
+    *size = nRow;
+    order_info *ret_data = malloc(nRow * sizeof(order_info));
+    if (NULL != errmsg)
+    {
+        sqlite3_free_table(dbResult);
+        printf("cant find things\n");
+        errmsg = NULL;
+        return NULL;
+    }
+
+    if (SQLITE_OK == ret)
+
+    {
+
+        index = nColumn;
+
+        for (t_s32int i = 0; i < nRow; i++)
+
+        {
+            for (t_s32int j = 0; j < nColumn; j++)
+
+            {
+
+                switch (j - 1)
+                {
+                case -1:
+                    strncpy(data[i].id, dbResult[index], sizeof(data[i].id));
+                    break;
+                case 0:
+                    strncpy(data[i].restaurant, dbResult[index], sizeof(data[i].restaurant));
+                    break;
+                case 1:
+                    strncpy(data[i].customer, dbResult[index], sizeof(data[i].customer));
+
+                    break;
+                case 2:
+                    strncpy(data[i].food[0], dbResult[index], sizeof(data[i].food[0]));
+
+                    break;
+                case 3:
+                    strncpy(data[i].food[1], dbResult[index], sizeof(data[i].food[1]));
+
+                    break;
+                case 4:
+                    strncpy(data[i].food[2], dbResult[index], sizeof(data[i].food[2]));
+
+                    break;
+                case 5:
+                    strncpy(data[i].food[3], dbResult[index], sizeof(data[i].food[3]));
+
+                    break;
+                case 6:
+                    strncpy(data[i].food[4], dbResult[index], sizeof(data[i].food[4]));
+
+                    break;
+                case 7:
+                    strncpy(data[i].food[5], dbResult[index], sizeof(data[i].food[5]));
+
+                    break;
+                case 8:
+                    strncpy(data[i].food[6], dbResult[index], sizeof(data[i].food[6]));
+
+                    break;
+                case 9:
+                    strncpy(data[i].food[7], dbResult[index], sizeof(data[i].food[7]));
+
+                    break;
+                case 10:
+                    strncpy(data[i].food[8], dbResult[index], sizeof(data[i].food[8]));
+
+                    break;
+                case 11:
+                    strncpy(data[i].food[9], dbResult[index], sizeof(data[i].food[9]));
+
+                    break;
+                case 12:
+                    data[i].price[0] = atoi(dbResult[index]);
+
+                    break;
+                case 13:
+                    data[i].price[1] = atoi(dbResult[index]);
+
+                    break;
+                case 14:
+                    data[i].price[2] = atoi(dbResult[index]);
+
+                    break;
+                case 15:
+                    data[i].price[3] = atoi(dbResult[index]);
+
+                    break;
+                case 16:
+                    data[i].price[4] = atoi(dbResult[index]);
+
+                    break;
+                case 17:
+                    data[i].price[5] = atoi(dbResult[index]);
+
+                    break;
+                case 18:
+                    data[i].price[6] = atoi(dbResult[index]);
+
+                    break;
+                case 19:
+                    data[i].price[7] = atoi(dbResult[index]);
+
+                    break;
+                case 20:
+                    data[i].price[8] = atoi(dbResult[index]);
+
+                    break;
+                case 21:
+                    data[i].price[9] = atoi(dbResult[index]);
+
+                    break;
+                case 22:
+                    data[i].price_total = atoi(dbResult[index]);
+
+                    break;
+                case 23:
+                    strncpy(data[i].cus_addr, dbResult[index], sizeof(data[i].cus_addr));
+
+                    break;
+                case 24:
+                    strncpy(data[i].book_time, dbResult[index], sizeof(data[i].book_time));
+
+                    break;
+                case 25:
+                    strncpy(data[i].remark, dbResult[index], sizeof(data[i].remark));
+
+                    break;
+                case 26:
+                    strncpy(data[i].phone_num, dbResult[index], sizeof(data[i].phone_num));
+
+                    break;
+                case 27:
+                    strncpy(data[i].cust_review, dbResult[index], sizeof(data[i].cust_review));
+
+                    break;
+                case 28:
+                    strncpy(data[i].res_review, dbResult[index], sizeof(data[i].res_review));
+
+                    break;
+                case 29:
+                    data[i].flag = atoi(dbResult[index]);
+                    break;
+                }
+
+                //  printf("字段值:%s,%d \n", dbResult[index], index);
+
+                ++index;
+            }
+        }
+        /*restaurant, customer, food1, food2,
+            food3, food4, food5, food6, food7, food8,
+            food9, food10, price1, price2, price3, price4,
+            price5, price6, price7, price8, price9,
+            price10, price_total, cus_addr, book_time, remark,
+            phone_num, cust_review, res_review, flag)*/
+        // 30-59 下标
+
+        for (int i = 0; i < (*size); i++)
+        {
+            ret_data[i] = data[i];
+            // printf("%s \n", data[i].phone_num);
+        }
+
+        sqlite3_free_table(dbResult);
+        return ret_data;
+    }
+}
+
 //插入订单信息
 t_s32int insert_order(order_info info)
 {
