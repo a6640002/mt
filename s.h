@@ -489,26 +489,20 @@ t_s32int if_listen_socket(void *arg, t_s32int *i)
     int flag = 0;
     char name[20];
     fun_arg arg_in_fun = *(fun_arg *)arg;
-    read(arg_in_fun.conn_fd, &flag, 4); //读取标志位
 
-    if (flag == 100)
+    strncpy(comm_data[max].name, name, 20);
+    comm_data[arg_in_fun.conn_fd].socket = arg_in_fun.conn_fd;
+    read(arg_in_fun.conn_fd, name, 20); //读取用户名字 且绑定
+    printf("===========comm_data[max - 1].name==============\n");
+    for (int i = 0; i < max; i++)
     {
-        strncpy(comm_data[max].name, name, 20);
-        comm_data[arg_in_fun.conn_fd].socket = arg_in_fun.conn_fd;
-        read(arg_in_fun.conn_fd, name, 20); //读取用户名字 且绑定
-        printf("===========comm_data[max - 1].name==============\n");
-        for (int i = 0; i < max; i++)
-        {
-            printf("i:%d name:%s socket%d \n", i, comm_data[i].name, comm_data[i].socket);
-        }
-
-        printf("=============================================\n");
-
-        printf("listen client connect  \n");
-        return FUNC_OK;
+        printf("i:%d name:%s socket%d \n", i, comm_data[i].name, comm_data[i].socket);
     }
-    *i = flag;
-    return FUNC_ERR;
+
+    printf("=============================================\n");
+
+    printf("listen client connect  \n");
+    return FUNC_OK;
 }
 
 //信号捕获函数 发信息给所有客户端
@@ -584,6 +578,11 @@ void *thread_fun_rest(void *arg)
         t_s8int buf[300];
         t_s32int i = 0;
         read(arg_in_fun.conn_fd, &i, 4);
+
+        if (i == 100)
+        {
+            if_listen_socket(arg, NULL);
+        }
         printf("get  new flag:%d connfd:%d \n", i, arg_in_fun.conn_fd);
         switch (i)
         {
