@@ -2,6 +2,7 @@
 
 int main(void)
 {
+
     signal(SIGPIPE, SIG_IGN);
     bzero(comm_data, sizeof(comm_data));
     int listen_fd = socket(PF_INET, SOCK_STREAM, 0), conn_fd;
@@ -14,6 +15,8 @@ int main(void)
     sockaddr_in addr;
 
     init_sockaddr(&addr);
+    int opt = 1;
+    setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&opt, sizeof(opt));
     if (0 > bind(listen_fd, (sockaddr *)&addr, sizeof(sockaddr_in)))
     {
         {
@@ -22,11 +25,12 @@ int main(void)
         }
     }
     listen(listen_fd, 10);
-      pthread_create(&conn_ph, 0, thread_fun_listen, NULL);
+    pthread_create(&conn_ph, 0, thread_fun_listen, NULL);
 
     while (1)
     {
         conn_fd = accept(listen_fd, NULL, NULL);
+
         if (conn_fd < 0)
         {
             perror("accept");
@@ -36,6 +40,7 @@ int main(void)
         fun_arg arg_new;
         arg_new.conn_fd = conn_fd;
         // get_menu_by_name_by_cus_server(conn_fd);
+
         pthread_create(&thread_rst, 0, thread_fun_rest, &arg_new);
     }
 }

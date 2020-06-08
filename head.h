@@ -29,7 +29,7 @@
     printf(x)
 
 #define Malloc(type, num) (type *)malloc(sizeof(type) * (num))
-#define IP "192.168.2.142"
+#define IP "127.0.0.1"
 #define PORT 8888
 typedef struct cus_info cus_info;
 typedef struct order_info order_info;
@@ -82,3 +82,4 @@ t_s32int send_mes_by_thread(char *name, char *mess);
 void *thread_fun_listen(void *arg);
 //分线程
 void *thread_fun_rest(void *arg);
+void display_comm();

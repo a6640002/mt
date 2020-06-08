@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,7 +12,10 @@
 #include <pthread.h>
 #include <strings.h>
 #include <signal.h>
+//#include "head.h"
 
+#define IP "127.0.0.1"
+#define PORT 8888
 typedef struct order_info order_info;
 typedef signed int t_s32int;
 typedef signed char t_s8int;
@@ -39,8 +41,6 @@ typedef struct sockaddr sockaddr;
     printf(x)
 
 #define Malloc(type, num) (type *)malloc(sizeof(type) * (num))
-#define IP "192.168.2.142"
-#define PORT 8888
 struct order_info
 {
     t_s8int id[30];           //订单号
